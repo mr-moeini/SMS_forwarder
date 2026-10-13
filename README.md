@@ -18,3 +18,9 @@ Android app that forwards incoming SMS automatically based on rules.
 ## Build
 Every push to `main` runs `.github/workflows/build.yml` and uploads `SMS_forwarder-debug-apk`.
 Actions tab -> latest run -> Artifacts.
+
+## Troubleshooting / عیب‌یابی
+Open menu -> **Forward log**. Each incoming SMS writes `RECV from <sender> rules=N matched=M`:
+- No `RECV` line at all: the system never delivered the SMS to the app. Check the SMS permission (and on Xiaomi/MIUI the separate "Receive SMS"/"Send SMS" and Autostart switches) and disable battery optimization. Chat/RCS messages are not SMS and are never delivered to apps.
+- `RECV ... matched=0`: the sender in your rule does not match the real sender shown in the log line. Copy it exactly.
+- `queued` followed by `SENT OK`: forwarding worked. `FAILED ...` shows the real error.

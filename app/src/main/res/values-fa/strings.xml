@@ -6,7 +6,9 @@
     <string name="sender_hint">شماره یا شناسهٔ فرستنده (مثلاً 98912... یا نام بانک)</string>
     <string name="keyword_hint">فقط اگر پیام شامل این متن بود (اختیاری)</string>
     <string name="dest_hint">شمارهٔ مقصد</string>
-    <string name="pick_contact">انتخاب از مخاطبین</string>
+    <string name="pick_contact">انتخاب مقصد از مخاطبین</string>
+    <string name="pick_sender">انتخاب فرستنده از مخاطبین</string>
+    <string name="clear_log">پاک کردن</string>
     <string name="save">ذخیره</string>
     <string name="cancel">انصراف</string>
     <string name="close">بستن</string>

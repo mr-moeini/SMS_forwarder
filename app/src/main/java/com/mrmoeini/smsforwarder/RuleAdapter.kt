@@ -32,7 +32,8 @@ class RuleAdapter(
         val ctx = holder.itemView.context
         holder.title.text = if (rule.name.isNotBlank()) rule.name else rule.sender
         val dest = if (rule.destName.isNotBlank()) "${rule.destName} (${rule.destNumber})" else rule.destNumber
-        holder.detail.text = ctx.getString(R.string.rule_detail, rule.sender, dest)
+        val from = if (rule.senderName.isNotBlank()) "${rule.senderName} (${rule.sender})" else rule.sender
+        holder.detail.text = ctx.getString(R.string.rule_detail, from, dest)
 
         holder.switch.setOnCheckedChangeListener(null)
         holder.switch.isChecked = rule.enabled

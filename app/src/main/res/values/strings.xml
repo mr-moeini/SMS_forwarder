@@ -6,7 +6,9 @@
     <string name="sender_hint">Sender number or ID (e.g. +98912..., BankName)</string>
     <string name="keyword_hint">Only if message contains (optional)</string>
     <string name="dest_hint">Forward to number</string>
-    <string name="pick_contact">Pick from contacts</string>
+    <string name="pick_contact">Pick destination from contacts</string>
+    <string name="pick_sender">Pick sender from contacts</string>
+    <string name="clear_log">Clear</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="close">Close</string>

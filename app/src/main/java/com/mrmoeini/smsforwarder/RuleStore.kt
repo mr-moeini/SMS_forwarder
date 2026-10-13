@@ -49,6 +49,11 @@ object RuleStore {
     }
 
     @Synchronized
+    fun clearLog(c: Context) {
+        prefs(c).edit().remove(KEY_LOG).apply()
+    }
+
+    @Synchronized
     fun readLog(c: Context): List<String> {
         val raw = prefs(c).getString(KEY_LOG, "[]") ?: "[]"
         val out = mutableListOf<String>()

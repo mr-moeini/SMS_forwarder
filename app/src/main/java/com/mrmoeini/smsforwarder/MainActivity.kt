@@ -30,10 +30,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvStatus: TextView
     private lateinit var tvEmpty: TextView
 
-    // State for the rule dialog's "pick contact" button.
+    // State for the rule dialog's "pick contact" buttons.
+    private var senderField: EditText? = null
     private var destField: EditText? = null
-    private var pickedName: String = ""
-    private var pickedNumber: String = ""
+    private var pickingSender = false
+    private var pickedSenderName = ""
+    private var pickedSenderNumber = ""
+    private var pickedDestName = ""
+    private var pickedDestNumber = ""
 
     private val requiredPermissions = arrayOf(
         Manifest.permission.RECEIVE_SMS,
@@ -55,9 +59,17 @@ class MainActivity : AppCompatActivity() {
                 )
                 contentResolver.query(uri, projection, null, null, null)?.use { c ->
                     if (c.moveToFirst()) {
-                        pickedNumber = normalizeNumber(c.getString(0) ?: "")
-                        pickedName = c.getString(1) ?: ""
-                        destField?.setText(pickedNumber)
+                        val number = Rule.toAsciiNumber(c.getString(0) ?: "")
+                        val name = c.getString(1) ?: ""
+                        if (pickingSender) {
+                            pickedSenderNumber = number
+                            pickedSenderName = name
+                            senderField?.setText(number)
+                        } else {
+                            pickedDestNumber = number
+                            pickedDestName = name
+                            destField?.setText(number)
+                        }
                     }
                 }
             }
@@ -114,12 +126,21 @@ class MainActivity : AppCompatActivity() {
         tvEmpty.visibility = if (rules.isEmpty()) View.VISIBLE else View.GONE
     }
 
-    private fun normalizeNumber(s: String): String = s.filter { it.isDigit() || it == '+' }
-
     private fun persist() {
         RuleStore.save(this, rules)
         adapter.notifyDataSetChanged()
         refreshUi()
+    }
+
+    private fun launchContactPicker(forSender: Boolean) {
+        pickingSender = forSender
+        try {
+            pickContact.launch(
+                Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI)
+            )
+        } catch (e: Exception) {
+            Toast.makeText(this, R.string.err_no_contacts, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun showRuleDialog(existing: Rule?) {
@@ -128,27 +149,24 @@ class MainActivity : AppCompatActivity() {
         val etSender = view.findViewById<EditText>(R.id.etSender)
         val etKeyword = view.findViewById<EditText>(R.id.etKeyword)
         val etDest = view.findViewById<EditText>(R.id.etDest)
-        val btnPick = view.findViewById<Button>(R.id.btnPick)
+        val btnPickSender = view.findViewById<Button>(R.id.btnPickSender)
+        val btnPickDest = view.findViewById<Button>(R.id.btnPick)
 
-        pickedName = existing?.destName ?: ""
-        pickedNumber = existing?.destNumber ?: ""
+        pickedSenderName = existing?.senderName ?: ""
+        pickedSenderNumber = existing?.sender ?: ""
+        pickedDestName = existing?.destName ?: ""
+        pickedDestNumber = existing?.destNumber ?: ""
         if (existing != null) {
             etName.setText(existing.name)
             etSender.setText(existing.sender)
             etKeyword.setText(existing.keyword)
             etDest.setText(existing.destNumber)
         }
+        senderField = etSender
         destField = etDest
 
-        btnPick.setOnClickListener {
-            try {
-                pickContact.launch(
-                    Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI)
-                )
-            } catch (e: Exception) {
-                Toast.makeText(this, R.string.err_no_contacts, Toast.LENGTH_SHORT).show()
-            }
-        }
+        btnPickSender.setOnClickListener { launchContactPicker(true) }
+        btnPickDest.setOnClickListener { launchContactPicker(false) }
 
         val dialog = AlertDialog.Builder(this)
             .setTitle(if (existing == null) R.string.add_rule else R.string.edit_rule)
@@ -156,13 +174,16 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton(R.string.save, null)
             .setNegativeButton(R.string.cancel, null)
             .create()
-        dialog.setOnDismissListener { destField = null }
+        dialog.setOnDismissListener {
+            senderField = null
+            destField = null
+        }
         dialog.show()
 
         // Set the click listener after show() so invalid input does not close the dialog.
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-            val sender = etSender.text.toString().trim()
-            val dest = normalizeNumber(etDest.text.toString())
+            val sender = Rule.cleanSender(etSender.text.toString())
+            val dest = Rule.toAsciiNumber(etDest.text.toString())
             if (sender.isEmpty()) {
                 etSender.error = getString(R.string.err_sender)
                 return@setOnClickListener
@@ -171,18 +192,25 @@ class MainActivity : AppCompatActivity() {
                 etDest.error = getString(R.string.err_dest)
                 return@setOnClickListener
             }
-            val destName = if (dest == pickedNumber) pickedName else ""
+            val senderName = if (sender == pickedSenderNumber) pickedSenderName else ""
+            val destName = if (dest == pickedDestNumber) pickedDestName else ""
             val name = etName.text.toString().trim()
             val keyword = etKeyword.text.toString().trim()
 
             if (existing == null) {
-                rules.add(Rule(name = name, sender = sender, keyword = keyword,
-                    destNumber = dest, destName = destName))
+                rules.add(
+                    Rule(
+                        name = name, sender = sender, senderName = senderName,
+                        keyword = keyword, destNumber = dest, destName = destName
+                    )
+                )
             } else {
                 val i = rules.indexOfFirst { it.id == existing.id }
                 if (i >= 0) {
-                    rules[i] = rules[i].copy(name = name, sender = sender, keyword = keyword,
-                        destNumber = dest, destName = destName)
+                    rules[i] = rules[i].copy(
+                        name = name, sender = sender, senderName = senderName,
+                        keyword = keyword, destNumber = dest, destName = destName
+                    )
                 }
             }
             persist()
@@ -213,6 +241,7 @@ class MainActivity : AppCompatActivity() {
                 .setTitle(R.string.log)
                 .setMessage(if (lines.isEmpty()) getString(R.string.log_empty) else lines.joinToString("\n\n"))
                 .setPositiveButton(R.string.close, null)
+                .setNeutralButton(R.string.clear_log) { _, _ -> RuleStore.clearLog(this) }
                 .show()
             return true
         }

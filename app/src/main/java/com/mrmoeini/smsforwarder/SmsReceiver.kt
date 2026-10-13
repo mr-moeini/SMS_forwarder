@@ -1,12 +1,15 @@
 package com.mrmoeini.smsforwarder
 
+import android.Manifest
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Telephony
 import android.telephony.SmsManager
+import androidx.core.content.ContextCompat
 
 /** Receives incoming SMS and forwards them according to the saved rules. */
 class SmsReceiver : BroadcastReceiver() {
@@ -44,6 +47,16 @@ class SmsReceiver : BroadcastReceiver() {
     }
 
     private fun forward(context: Context, rule: Rule, from: String, body: String, subId: Int) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            RuleStore.addLog(
+                context,
+                "$from -> ${rule.destNumber}  NOT SENT: SEND_SMS permission is not granted. " +
+                    "Open the app and allow SMS (App info > Permissions > SMS)."
+            )
+            return
+        }
         val text = "[$from] $body"
         try {
             val sms = smsManager(context, subId)

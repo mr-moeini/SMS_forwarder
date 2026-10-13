@@ -44,9 +44,15 @@ class MainActivity : AppCompatActivity() {
         Manifest.permission.SEND_SMS
     )
 
+    private var userTappedBanner = false
+
     private val permLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
             refreshUi()
+            // If the user asked for the permission and the system still did not grant it
+            // (denied before, or restricted for sideloaded apps), send them to app settings.
+            if (userTappedBanner && missingPermissions().isNotEmpty()) openAppSettings()
+            userTappedBanner = false
         }
 
     private val pickContact =
@@ -104,9 +110,13 @@ class MainActivity : AppCompatActivity() {
         findViewById<FloatingActionButton>(R.id.fabAdd).setOnClickListener { showRuleDialog(null) }
 
         tvStatus.setOnClickListener {
-            startActivity(
-                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName"))
-            )
+            val missing = missingPermissions()
+            if (missing.isEmpty()) {
+                openAppSettings()
+            } else {
+                userTappedBanner = true
+                permLauncher.launch(missing.toTypedArray())
+            }
         }
 
         if (!hasPermissions()) permLauncher.launch(requiredPermissions)
@@ -117,12 +127,27 @@ class MainActivity : AppCompatActivity() {
         refreshUi()
     }
 
-    private fun hasPermissions(): Boolean = requiredPermissions.all {
-        ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
+    private fun missingPermissions(): List<String> = requiredPermissions.filter {
+        ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun hasPermissions(): Boolean = missingPermissions().isEmpty()
+
+    private fun openAppSettings() {
+        startActivity(
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName"))
+        )
     }
 
     private fun refreshUi() {
-        tvStatus.visibility = if (hasPermissions()) View.GONE else View.VISIBLE
+        val missing = missingPermissions()
+        tvStatus.text = if (missing.isEmpty()) {
+            getString(R.string.perm_missing)
+        } else {
+            getString(R.string.perm_missing) + "\n(" +
+                missing.joinToString(", ") { it.substringAfterLast('.') } + ")"
+        }
+        tvStatus.visibility = if (missing.isEmpty()) View.GONE else View.VISIBLE
         tvEmpty.visibility = if (rules.isEmpty()) View.VISIBLE else View.GONE
     }
 

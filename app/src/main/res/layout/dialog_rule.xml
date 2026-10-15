@@ -7,17 +7,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:paddingStart="20dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="8dp">
 
         <EditText
             android:id="@+id/etName"
+            style="@style/IOSField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/rule_name_hint"
             android:inputType="text" />
 
+        <TextView
+            style="@style/IOSSection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sec_sender" />
+
         <EditText
             android:id="@+id/etSender"
+            style="@style/IOSField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/sender_hint"
@@ -25,27 +36,42 @@
 
         <Button
             android:id="@+id/btnPickSender"
+            style="@style/IOSTextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/pick_sender" />
 
+        <TextView
+            style="@style/IOSSection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sec_filter" />
+
         <EditText
             android:id="@+id/etKeyword"
+            style="@style/IOSField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/keyword_hint"
             android:inputType="text" />
 
+        <TextView
+            style="@style/IOSSection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sec_forward" />
+
         <EditText
             android:id="@+id/etDest"
+            style="@style/IOSField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:hint="@string/dest_hint"
             android:inputType="phone" />
 
         <Button
             android:id="@+id/btnPick"
+            style="@style/IOSTextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/pick_contact" />

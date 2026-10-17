@@ -3,7 +3,7 @@ package com.mrmoeini.smsforwarder
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
-import android.icu.util.PersianCalendar
+import android.icu.util.ULocale
 import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.NumberPicker
@@ -77,12 +77,15 @@ object TimeUtil {
 /** Dates are shown in the Persian (Jalali) calendar when the device language is Persian. */
 object DateUtil {
 
+    private fun persianCal(): android.icu.util.Calendar =
+        android.icu.util.Calendar.getInstance(ULocale("fa_IR@calendar=persian"))
+
     val useJalali: Boolean
         get() = Locale.getDefault().language == "fa"
 
     fun format(millis: Long): String {
         return if (useJalali) {
-            val c = PersianCalendar()
+            val c = persianCal()
             c.timeInMillis = millis
             String.format(
                 Locale.US, "%04d/%02d/%02d",
@@ -138,7 +141,7 @@ object DateUtil {
     }
 
     private fun pickJalali(context: Context, base: Long, onPicked: (Long) -> Unit) {
-        val cal = PersianCalendar()
+        val cal = persianCal()
         cal.timeInMillis = base
         val y0 = cal.get(android.icu.util.Calendar.YEAR)
         val m0 = cal.get(android.icu.util.Calendar.MONTH) + 1
@@ -168,7 +171,7 @@ object DateUtil {
         AlertDialog.Builder(context)
             .setView(row)
             .setPositiveButton(R.string.save) { _, _ ->
-                val c = PersianCalendar()
+                val c = persianCal()
                 c.set(py.value, pm.value - 1, 1)
                 val maxDay = c.getActualMaximum(android.icu.util.Calendar.DAY_OF_MONTH)
                 c.set(py.value, pm.value - 1, minOf(pd.value, maxDay))

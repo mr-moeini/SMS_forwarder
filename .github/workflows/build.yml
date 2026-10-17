@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -38,10 +38,31 @@ jobs:
           gradle-version: 8.7
 
       - name: Build debug APK
-        run: gradle assembleDebug --stacktrace
+        run: |
+          set -o pipefail
+          gradle assembleDebug --stacktrace 2>&1 | tee build.log
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: SMS_forwarder-debug-apk
           path: app/build/outputs/apk/debug/*.apk
+
+      - name: Publish build summary to ci-logs branch
+        if: always()
+        run: |
+          {
+            echo "run: ${{ github.run_id }}  sha: ${{ github.sha }}  status: ${{ job.status }}"
+            echo "=== errors ==="
+            grep -nE "^e: |error:|AAPT|FAILED|What went wrong|Execution failed|Unresolved|Manifest merger" -A4 build.log | head -300 || true
+            echo "=== tail ==="
+            tail -n 40 build.log || true
+          } > /tmp/build-summary.txt 2>&1 || true
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan ci-logs
+          git rm -rf . > /dev/null 2>&1 || true
+          cp /tmp/build-summary.txt build-summary.txt
+          git add build-summary.txt
+          git commit -m "build summary" > /dev/null
+          git push -f origin ci-logs

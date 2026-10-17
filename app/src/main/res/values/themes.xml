@@ -43,6 +43,12 @@
         <item name="android:layout_marginStart">4dp</item>
     </style>
 
+    <style name="IOSSwitch">
+        <item name="thumbTint">@android:color/white</item>
+        <item name="trackTint">@color/ios_switch_track</item>
+        <item name="useMaterialThemeColors">false</item>
+    </style>
+
     <style name="IOSTextButton" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:textColor">@color/ios_blue</item>
         <item name="android:textAllCaps">false</item>

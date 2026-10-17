@@ -13,7 +13,7 @@ object RuleStore {
     private const val KEY_LOG = "log"
     private const val MAX_LOG = 50
 
-    private fun prefs(c: Context) = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+    fun prefs(c: Context) = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 
     @Synchronized
     fun load(c: Context): MutableList<Rule> {

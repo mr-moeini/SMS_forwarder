@@ -11,5 +11,6 @@
     <color name="ios_switch_off">#E9E9EA</color>
     <color name="ios_warning_bg">#FFF4CC</color>
     <color name="ios_warning_text">#7A5C00</color>
+    <color name="ios_separator">#C6C6C8</color>
     <bool name="light_bars">true</bool>
 </resources>

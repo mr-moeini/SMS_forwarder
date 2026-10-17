@@ -1,4 +1,12 @@
-# SMS_forwarder
+# Call and SMS Forwarder
+
+Android app (iOS-style UI) with:
+- **SMS Forwarder** - forward SMS from a number / sender ID (optionally containing a keyword) to another number.
+- **Call Forwarder** - switch carrier call forwarding on/off on a schedule (time window + days).
+- **Call Answering** - auto-answer calls (all callers or chosen people, time window, date range / no expiry) and play a chosen or recorded voice message, then hang up.
+- **Backup / Restore** - one zip file with every rule and recorded message.
+- **About** - Developed by : MR Moeini - https://www.linkedin.com/in/mohammad-reza-moeini-83088987
+
 
 Android app that forwards incoming SMS automatically based on rules.
 اپلیکیشن اندروید برای فوروارد خودکار پیامک بر اساس قانون.

@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -22,11 +23,9 @@ import java.util.Locale
 class MainActivity : AppCompatActivity() {
 
     private lateinit var smsValue: TextView
-    private lateinit var cfValue: TextView
-    private lateinit var caValue: TextView
 
     private val backupLauncher =
-        registerForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
+        registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
             if (uri != null) runBackup(uri)
         }
 
@@ -46,16 +45,13 @@ class MainActivity : AppCompatActivity() {
         smsValue = addRow(g1, R.drawable.ic_sms, 0xFF34C759.toInt(), R.string.sms_forwarder) {
             startActivity(Intent(this, SmsActivity::class.java))
         }
-        cfValue = addRow(g1, R.drawable.ic_call_forward, 0xFF007AFF.toInt(), R.string.call_forwarder) {
-            startActivity(Intent(this, CallForwardActivity::class.java))
-        }
-        caValue = addRow(g1, R.drawable.ic_voicemail, 0xFFFF9500.toInt(), R.string.call_answering) {
-            startActivity(Intent(this, CallAnswerActivity::class.java))
+        addRow(g1, R.drawable.ic_device, 0xFF007AFF.toInt(), R.string.device_identity) {
+            showDeviceDialog()
         }
 
         addRow(g2, R.drawable.ic_backup, 0xFF5856D6.toInt(), R.string.backup_settings) {
             val stamp = SimpleDateFormat("yyyyMMdd_HHmm", Locale.US).format(Date())
-            backupLauncher.launch("call_sms_forwarder_backup_$stamp.zip")
+            backupLauncher.launch("sms_forwarder_backup_$stamp.json")
         }
         addRow(g2, R.drawable.ic_restore, 0xFF30B0C7.toInt(), R.string.restore_settings) {
             restoreLauncher.launch(arrayOf("*/*"))
@@ -69,21 +65,28 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         updateValues()
-        // The process may have been killed: bring the answer service back while the app is visible.
-        if (AnswerRuleStore.isEnabled(this) && AnswerService.instance == null) {
-            try {
-                AnswerService.start(this)
-            } catch (_: Exception) {
-            }
-        }
     }
 
     private fun updateValues() {
         smsValue.text = getString(R.string.count_rules, RuleStore.load(this).size)
-        cfValue.text = getString(R.string.count_rules, CallRuleStore.load(this).size)
-        caValue.text = getString(
-            if (AnswerRuleStore.isEnabled(this)) R.string.state_on else R.string.state_off
-        )
+    }
+
+    private fun showDeviceDialog() {
+        val view = layoutInflater.inflate(R.layout.dialog_device, null)
+        val etName = view.findViewById<EditText>(R.id.etDeviceName)
+        val etUdid = view.findViewById<EditText>(R.id.etUdid)
+        etName.setText(DeviceInfo.overrideName(this))
+        etName.hint = DeviceInfo.defaultName(this)
+        etUdid.setText(DeviceInfo.overrideUdid(this))
+        etUdid.hint = DeviceInfo.defaultUdid(this)
+        AlertDialog.Builder(this)
+            .setTitle(R.string.device_identity)
+            .setView(view)
+            .setPositiveButton(R.string.save) { _, _ ->
+                DeviceInfo.setOverrides(this, etName.text.toString(), etUdid.text.toString())
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     private fun addRow(
@@ -146,15 +149,6 @@ class MainActivity : AppCompatActivity() {
             }
             runOnUiThread {
                 if (err == null) {
-                    CallForwardScheduler.reconcile(this)
-                    if (AnswerRuleStore.isEnabled(this)) {
-                        try {
-                            AnswerService.start(this)
-                        } catch (_: Exception) {
-                        }
-                    } else {
-                        AnswerService.stop(this)
-                    }
                     updateValues()
                     Toast.makeText(this, R.string.restore_done, Toast.LENGTH_LONG).show()
                 } else {

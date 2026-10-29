@@ -50,8 +50,33 @@
     </style>
 
     <style name="IOSTextButton" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">@color/ios_blue</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textSize">15sp</item>
+    </style>
+
+    <!-- Accent color themes: only colorPrimary (and the matching control colors) change. -->
+    <style name="Theme.SMSForwarder.Green" parent="Theme.SMSForwarder">
+        <item name="colorPrimary">#34C759</item>
+        <item name="colorPrimaryVariant">#34C759</item>
+        <item name="colorSecondary">#34C759</item>
+        <item name="colorAccent">#34C759</item>
+        <item name="colorControlActivated">#34C759</item>
+    </style>
+
+    <style name="Theme.SMSForwarder.Purple" parent="Theme.SMSForwarder">
+        <item name="colorPrimary">#AF52DE</item>
+        <item name="colorPrimaryVariant">#AF52DE</item>
+        <item name="colorSecondary">#AF52DE</item>
+        <item name="colorAccent">#AF52DE</item>
+        <item name="colorControlActivated">#AF52DE</item>
+    </style>
+
+    <style name="Theme.SMSForwarder.Orange" parent="Theme.SMSForwarder">
+        <item name="colorPrimary">#FF9500</item>
+        <item name="colorPrimaryVariant">#FF9500</item>
+        <item name="colorSecondary">#FF9500</item>
+        <item name="colorAccent">#FF9500</item>
+        <item name="colorControlActivated">#FF9500</item>
     </style>
 </resources>

@@ -101,4 +101,21 @@
     <string name="about_developed">Developed by : MR Moeini</string>
     <string name="about_linkedin_url">https://www.linkedin.com/in/mohammad-reza-moeini-83088987</string>
     <string name="about_version">نسخه %1$s</string>
+
+    <string name="settings">تنظیمات</string>
+    <string name="sec_language">زبان</string>
+    <string name="sec_appearance">ظاهر</string>
+    <string name="sec_accent_color">رنگ اصلی</string>
+    <string name="sec_help">راهنما</string>
+    <string name="theme_system">پیروی از سیستم</string>
+    <string name="theme_light">روشن</string>
+    <string name="theme_dark">تاریک</string>
+    <string name="theme_blue">آبی</string>
+    <string name="theme_green">سبز</string>
+    <string name="theme_purple">بنفش</string>
+    <string name="theme_orange">نارنجی</string>
+    <string name="choose_language_title">زبان خود را انتخاب کنید</string>
+    <string name="choose_language_sub">بعداً هم می‌توانید از تنظیمات آن را تغییر دهید</string>
+    <string name="help_and_tutorial">راهنما و آموزش</string>
+    <string name="example_label">نمونه</string>
 </resources>

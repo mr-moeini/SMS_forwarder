@@ -13,14 +13,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 /** iOS Settings-style home screen. */
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var smsValue: TextView
 
@@ -36,7 +35,22 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!LocaleStore.isChosen(this)) {
+            startActivity(
+                Intent(this, LanguageActivity::class.java)
+                    .putExtra(LanguageActivity.EXTRA_FIRST_RUN, true)
+            )
+            finish()
+            return
+        }
         setContentView(R.layout.activity_home)
+
+        findViewById<View>(R.id.btnHelp).setOnClickListener {
+            startActivity(Intent(this, HelpActivity::class.java))
+        }
+        findViewById<View>(R.id.btnSettings).setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
 
         val g1 = findViewById<LinearLayout>(R.id.group1)
         val g2 = findViewById<LinearLayout>(R.id.group2)

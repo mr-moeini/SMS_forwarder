@@ -21,7 +21,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/back"
             android:src="@drawable/ic_back"
-            android:tint="@color/ios_blue" />
+            android:tint="?attr/colorPrimary" />
     </LinearLayout>
 
     <com.google.android.material.card.MaterialCardView
@@ -99,7 +99,7 @@
                 android:focusable="true"
                 android:padding="16dp"
                 android:text="@string/about_linkedin_url"
-                android:textColor="@color/ios_blue"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="15sp" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

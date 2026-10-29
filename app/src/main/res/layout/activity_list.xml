@@ -22,7 +22,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/back"
             android:src="@drawable/ic_back"
-            android:tint="@color/ios_blue" />
+            android:tint="?attr/colorPrimary" />
 
         <View
             android:layout_width="0dp"
@@ -36,7 +36,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/log"
             android:src="@drawable/ic_log"
-            android:tint="@color/ios_blue" />
+            android:tint="?attr/colorPrimary" />
 
         <ImageButton
             android:id="@+id/btnAdd"
@@ -45,7 +45,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/add_rule"
             android:src="@drawable/ic_add"
-            android:tint="@color/ios_blue" />
+            android:tint="?attr/colorPrimary" />
     </LinearLayout>
 
     <TextView

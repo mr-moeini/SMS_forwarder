@@ -13,13 +13,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.switchmaterial.SwitchMaterial
 import org.json.JSONObject
 import java.util.UUID
 
 /** iOS-style form to create / edit one forwarding rule. */
-class RuleEditorActivity : AppCompatActivity() {
+class RuleEditorActivity : BaseActivity() {
 
     companion object {
         const val EXTRA_RULE = "rule"
@@ -105,6 +104,16 @@ class RuleEditorActivity : AppCompatActivity() {
         etScope = findViewById(R.id.etScope)
         etHeaders = findViewById(R.id.etHeaders)
         etTimeout = findViewById(R.id.etTimeout)
+
+        FieldHelp.attach(etSender, "sender")
+        FieldHelp.attach(etKeyword, "keyword")
+        FieldHelp.attach(etRegex, "regex")
+        FieldHelp.attach(etDest, "dest")
+        FieldHelp.attach(etUrl, "api_url")
+        FieldHelp.attach(etBody, "api_body")
+        FieldHelp.attach(etHeaders, "api_headers")
+        FieldHelp.attach(etContentType, "api_content_type")
+        FieldHelp.attach(etTimeout, "api_timeout")
         swInsecure = findViewById(R.id.swInsecure)
         btnTestApi = findViewById(R.id.btnTestApi)
 

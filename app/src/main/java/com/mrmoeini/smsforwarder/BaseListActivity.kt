@@ -16,7 +16,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,7 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
  * Shared iOS-style list screen: large title, add + log buttons, permission banner, empty state,
  * rule cards with a switch, tap to edit, swipe to delete.
  */
-abstract class BaseListActivity<T : Any> : AppCompatActivity() {
+abstract class BaseListActivity<T : Any> : BaseActivity() {
 
     protected val items = mutableListOf<T>()
     protected lateinit var adapter: SimpleRuleAdapter<T>

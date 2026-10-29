@@ -33,3 +33,10 @@ Each rule has a **sender** (phone number or sender ID such as a bank name; pick 
 Every push to `main` runs `.github/workflows/build.yml` and uploads `SMS_forwarder-debug-apk` (Actions -> latest run -> Artifacts).
 
 Developed by : MR Moeini - https://www.linkedin.com/in/mohammad-reza-moeini-83088987
+
+## Language, theme and help (v2.0)
+- First launch asks for a language (English or فارسی); change it anytime in Settings - the whole app switches immediately, independent of the phone's system language.
+- Settings also has a dark/light/system toggle and four accent colors (Blue, Green, Purple, Orange).
+- Every key field in the rule editor has a small (i) icon - tap it for a short, localized explanation and a concrete example.
+- A dedicated Help screen (home screen's "?" icon, or Settings) explains rules, regex, API setup and permissions in the current language.
+- The package name is now `com.mrmoeini.smsforward`, distinct from the Uniqa Client app, so both can be installed on the same phone without conflicting.

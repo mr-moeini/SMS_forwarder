@@ -48,16 +48,7 @@ jobs:
           name: SMS_forwarder-debug-apk
           path: app/build/outputs/apk/debug/*.apk
 
-      - name: Decode release keystore
-        if: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
-        env:
-          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
-        run: |
-          echo "$RELEASE_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
-          echo "RELEASE_KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
-
       - name: Build signed release APK + AAB
-        if: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
         env:
           RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
           RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
@@ -65,21 +56,28 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
           set -o pipefail
+          if [ -z "$RELEASE_KEYSTORE_BASE64" ]; then
+            echo "RELEASE_KEYSTORE_BASE64 secret is not set yet - skipping the signed release build."
+            echo "(Debug APK above still built fine.)"
+            exit 0
+          fi
+          echo "$RELEASE_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          export RELEASE_KEYSTORE_PATH="$RUNNER_TEMP/release.jks"
           gradle assembleRelease bundleRelease --stacktrace 2>&1 | tee -a build.log
 
       - name: Upload signed release APK
-        if: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: SMS_forwarder-release-apk
           path: app/build/outputs/apk/release/*.apk
+          if-no-files-found: ignore
 
       - name: Upload signed release AAB (for Play Store)
-        if: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: SMS_forwarder-release-aab
           path: app/build/outputs/bundle/release/*.aab
+          if-no-files-found: ignore
 
       - name: Publish build summary to ci-logs branch
         if: always()

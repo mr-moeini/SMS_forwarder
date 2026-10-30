@@ -9,3 +9,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Release signing keystore must NEVER be committed - it is provided to CI via GitHub Actions secrets.
+*.jks
+*.keystore

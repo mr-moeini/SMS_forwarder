@@ -13,10 +13,34 @@ android {
         versionName "2.0"
     }
 
+    // Release signing comes from environment variables set by CI from GitHub Actions secrets -
+    // never hardcoded here and never committed to the repo. A local `gradle assembleRelease`
+    // without those variables set falls back to no signing config (the build then fails at the
+    // packaging step with a clear "not signed" error instead of silently using a fake key).
+    def releaseStorePath = System.getenv("RELEASE_KEYSTORE_PATH")
+    def releaseStorePassword = System.getenv("RELEASE_KEYSTORE_PASSWORD")
+    def releaseKeyAlias = System.getenv("RELEASE_KEY_ALIAS")
+    def releaseKeyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+    def hasReleaseSigning = releaseStorePath && releaseStorePassword && releaseKeyAlias && releaseKeyPassword
+
+    signingConfigs {
+        if (hasReleaseSigning) {
+            release {
+                storeFile file(releaseStorePath)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (hasReleaseSigning) {
+                signingConfig signingConfigs.release
+            }
         }
         debug {
             minifyEnabled false

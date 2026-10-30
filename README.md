@@ -40,3 +40,6 @@ Developed by : MR Moeini - https://www.linkedin.com/in/mohammad-reza-moeini-8308
 - Every key field in the rule editor has a small (i) icon - tap it for a short, localized explanation and a concrete example.
 - A dedicated Help screen (home screen's "?" icon, or Settings) explains rules, regex, API setup and permissions in the current language.
 - The package name is now `com.mrmoeini.smsforward`, distinct from the Uniqa Client app, so both can be installed on the same phone without conflicting.
+
+## Release signing (for Play Store)
+Debug builds are signed with Android's default debug key - fine for testing, never valid for a Play Store release. A separate release keystore is used instead, supplied to CI only through GitHub Actions secrets (`RELEASE_KEYSTORE_BASE64`, `RELEASE_KEYSTORE_PASSWORD`, `RELEASE_KEY_ALIAS`, `RELEASE_KEY_PASSWORD`). It is never committed to this repo. Once those secrets are set, every push also produces a signed `SMS_forwarder-release-apk` and a `SMS_forwarder-release-aab` (the format Play Store requires for new apps) as workflow artifacts. Keep the keystore file and its passwords permanently and privately - losing them means the app can never be updated again under the same listing; leaking them lets someone else publish updates as you.

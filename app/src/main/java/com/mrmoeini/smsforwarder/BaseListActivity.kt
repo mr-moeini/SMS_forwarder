@@ -10,7 +10,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.Settings
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -28,10 +31,13 @@ import androidx.recyclerview.widget.RecyclerView
 abstract class BaseListActivity<T : Any> : BaseActivity() {
 
     protected val items = mutableListOf<T>()
+    private val visibleItems = mutableListOf<T>()
     protected lateinit var adapter: SimpleRuleAdapter<T>
 
     private lateinit var tvStatus: TextView
     private lateinit var tvEmpty: TextView
+    private lateinit var etSearch: EditText
+    private var searchQuery = ""
     private var userTappedBanner = false
     private var contactCallback: ((String, String) -> Unit)? = null
 
@@ -81,6 +87,7 @@ abstract class BaseListActivity<T : Any> : BaseActivity() {
         findViewById<TextView>(R.id.tvTitle).setText(titleRes)
         tvStatus = findViewById(R.id.tvStatus)
         tvEmpty = findViewById(R.id.tvEmpty)
+        etSearch = findViewById(R.id.etSearch)
 
         findViewById<View>(R.id.btnBack).setOnClickListener { finish() }
         findViewById<View>(R.id.btnAdd).setOnClickListener { showEditor(null) }
@@ -88,7 +95,7 @@ abstract class BaseListActivity<T : Any> : BaseActivity() {
 
         items.addAll(loadItems())
         adapter = SimpleRuleAdapter(
-            items,
+            visibleItems,
             { titleOf(it) },
             { detailOf(it) },
             { enabledOf(it) },
@@ -100,13 +107,24 @@ abstract class BaseListActivity<T : Any> : BaseActivity() {
                     onItemsChanged()
                 }
             },
-            { showEditor(it) }
+            { showEditor(it) },
+            { item -> confirmDelete(item) {} }
         )
 
         val rv = findViewById<RecyclerView>(R.id.rvRules)
         rv.layoutManager = LinearLayoutManager(this)
         rv.adapter = adapter
         attachSwipeToDelete(rv)
+        applyFilter()
+
+        etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                searchQuery = s?.toString() ?: ""
+                applyFilter()
+            }
+        })
 
         setUpExtra(findViewById<LinearLayout>(R.id.extraContainer))
 
@@ -153,14 +171,29 @@ abstract class BaseListActivity<T : Any> : BaseActivity() {
                 missing.joinToString(", ") { it.substringAfterLast('.') } + ")"
         }
         tvStatus.visibility = if (missing.isEmpty()) View.GONE else View.VISIBLE
-        tvEmpty.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
+        tvEmpty.text = if (searchQuery.isNotBlank()) getString(R.string.no_search_results) else getString(R.string.no_rules)
+        tvEmpty.visibility = if (visibleItems.isEmpty()) View.VISIBLE else View.GONE
     }
 
     protected fun persist() {
         saveItems()
-        adapter.notifyDataSetChanged()
+        applyFilter()
         refreshUi()
         onItemsChanged()
+    }
+
+    /** Recomputes the visible (search-filtered) list and refreshes the RecyclerView. */
+    private fun applyFilter() {
+        visibleItems.clear()
+        visibleItems.addAll(
+            if (searchQuery.isBlank()) items
+            else items.filter {
+                titleOf(it).contains(searchQuery, ignoreCase = true) ||
+                    detailOf(it).contains(searchQuery, ignoreCase = true)
+            }
+        )
+        adapter.notifyDataSetChanged()
+        refreshUi()
     }
 
     /** Opens the system contact picker (no READ_CONTACTS permission needed) and returns number + name. */
@@ -225,8 +258,8 @@ abstract class BaseListActivity<T : Any> : BaseActivity() {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val pos = viewHolder.bindingAdapterPosition
-                if (pos == RecyclerView.NO_POSITION || pos >= items.size) return
-                confirmDelete(items[pos]) { adapter.notifyItemChanged(pos) }
+                if (pos == RecyclerView.NO_POSITION || pos >= visibleItems.size) return
+                confirmDelete(visibleItems[pos]) { adapter.notifyItemChanged(pos) }
             }
 
             override fun onChildDraw(

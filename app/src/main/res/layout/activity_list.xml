@@ -59,6 +59,26 @@
         android:textSize="32sp"
         android:textStyle="bold" />
 
+    <EditText
+        android:id="@+id/etSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/bg_card_field"
+        android:drawablePadding="8dp"
+        android:drawableStart="@drawable/ic_search"
+        android:drawableTint="@color/ios_secondary"
+        android:hint="@string/search_rules_hint"
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        android:maxLines="1"
+        android:padding="12dp"
+        android:textColor="@color/ios_label"
+        android:textColorHint="@color/ios_secondary"
+        android:textSize="15sp" />
+
     <LinearLayout
         android:id="@+id/extraContainer"
         android:layout_width="match_parent"

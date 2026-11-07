@@ -118,4 +118,12 @@
     <string name="choose_language_sub">بعداً هم می‌توانید از تنظیمات آن را تغییر دهید</string>
     <string name="help_and_tutorial">راهنما و آموزش</string>
     <string name="example_label">نمونه</string>
+
+    <string name="unknown_placeholder_title">جایگزین شناخته‌نشده</string>
+    <string name="unknown_placeholder_body">این متن یک جایگزین پشتیبانی‌شده نیست و دقیقاً همین‌طور که نوشته شده ارسال می‌شود، که ممکن است درخواست را خراب کند: %1$s
+
+جایگزین‌های پشتیبانی‌شده: {{device_name}} {{udid}} {{sender}} {{message}} {{text}} {{timestamp}} (برای escape شدن در JSON، پسوند _json اضافه کنید).</string>
+    <string name="send_anyway">با این‌حال ارسال شود</string>
+    <string name="search_rules_hint">جستجوی قانون‌ها…</string>
+    <string name="no_search_results">قانونی مطابق جستجو یافت نشد</string>
 </resources>

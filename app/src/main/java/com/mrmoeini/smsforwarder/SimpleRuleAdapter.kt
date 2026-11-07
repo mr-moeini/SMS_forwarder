@@ -4,23 +4,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-/** iOS-style card row: title, detail text and an on/off switch. Used by all three rule lists. */
+/** iOS-style card row: title, detail text, an on/off switch, and a delete button. */
 class SimpleRuleAdapter<T>(
     private val items: List<T>,
     private val title: (T) -> String,
     private val detail: (T) -> String,
     private val enabled: (T) -> Boolean,
     private val onToggle: (T, Boolean) -> Unit,
-    private val onEdit: (T) -> Unit
+    private val onEdit: (T) -> Unit,
+    private val onDelete: (T) -> Unit
 ) : RecyclerView.Adapter<SimpleRuleAdapter.VH>() {
 
     class VH(v: View) : RecyclerView.ViewHolder(v) {
         val title: TextView = v.findViewById(R.id.tvTitle)
         val detail: TextView = v.findViewById(R.id.tvDetail)
         val switch: CompoundButton = v.findViewById(R.id.swEnabled)
+        val delete: ImageButton = v.findViewById(R.id.btnDelete)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -36,6 +39,7 @@ class SimpleRuleAdapter<T>(
         holder.switch.isChecked = enabled(item)
         holder.switch.setOnCheckedChangeListener { _, checked -> onToggle(item, checked) }
         holder.itemView.setOnClickListener { onEdit(item) }
+        holder.delete.setOnClickListener { onDelete(item) }
     }
 
     override fun getItemCount(): Int = items.size

@@ -92,6 +92,25 @@ object ApiClient {
         return q.substring(1, q.length - 1)
     }
 
+    private val KNOWN_PLACEHOLDERS =
+        setOf("device_name", "udid", "sender", "message", "text", "timestamp")
+
+    /**
+     * Returns every placeholder in [template] that will NOT be substituted: either `{{name}}` /
+     * `{{name_json}}` with a name outside [KNOWN_PLACEHOLDERS], or anything written as `%name%`
+     * (that syntax was never supported - only `{{name}}` is). Lets the UI warn before a test
+     * request sends a literal, unresolved placeholder.
+     */
+    fun findUnknownPlaceholders(template: String): List<String> {
+        val found = LinkedHashSet<String>()
+        Regex("\\{\\{\\s*([A-Za-z0-9_]+?)(_json)?\\s*\\}\\}").findAll(template).forEach { m ->
+            val name = m.groupValues[1]
+            if (name !in KNOWN_PLACEHOLDERS) found.add(m.value)
+        }
+        Regex("%[A-Za-z0-9_]+%").findAll(template).forEach { m -> found.add(m.value) }
+        return found.toList()
+    }
+
     private fun applyTemplate(
         template: String, name: String, udid: String, sender: String,
         message: String, fullText: String, timestamp: Long

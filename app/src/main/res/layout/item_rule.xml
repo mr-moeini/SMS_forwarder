@@ -58,5 +58,15 @@
             app:thumbTint="@android:color/white"
             app:trackTint="@color/ios_switch_track"
             app:useMaterialThemeColors="false" />
+
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/delete"
+            android:src="@drawable/ic_delete"
+            android:tint="@color/ios_red" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

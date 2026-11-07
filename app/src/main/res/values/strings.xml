@@ -118,4 +118,12 @@
     <string name="choose_language_sub">You can change this later in Settings</string>
     <string name="help_and_tutorial">Help &amp; Tutorial</string>
     <string name="example_label">EXAMPLE</string>
+
+    <string name="unknown_placeholder_title">Unrecognized placeholder</string>
+    <string name="unknown_placeholder_body">This text is not a supported placeholder and will be sent exactly as written, which may break the request: %1$s
+
+Supported placeholders: {{device_name}} {{udid}} {{sender}} {{message}} {{text}} {{timestamp}} (add _json to JSON-escape a value).</string>
+    <string name="send_anyway">Send Anyway</string>
+    <string name="search_rules_hint">Search rules…</string>
+    <string name="no_search_results">No rules match your search</string>
 </resources>

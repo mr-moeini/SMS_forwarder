@@ -369,6 +369,22 @@ class RuleEditorActivity : BaseActivity() {
             etUrl.error = getString(R.string.err_url)
             return
         }
+        if (api.format == ApiConfig.FORMAT_CUSTOM) {
+            val unknown = ApiClient.findUnknownPlaceholders(api.bodyTemplate)
+            if (unknown.isNotEmpty()) {
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.unknown_placeholder_title)
+                    .setMessage(getString(R.string.unknown_placeholder_body, unknown.joinToString(", ")))
+                    .setPositiveButton(R.string.send_anyway) { _, _ -> runTestApi(api) }
+                    .setNegativeButton(R.string.cancel, null)
+                    .show()
+                return
+            }
+        }
+        runTestApi(api)
+    }
+
+    private fun runTestApi(api: ApiConfig) {
         btnTestApi.isEnabled = false
         btnTestApi.setText(R.string.test_running)
         val app = applicationContext
